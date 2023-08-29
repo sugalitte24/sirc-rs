@@ -1,0 +1,25 @@
+rest-client:
+  orfeo:
+    url: https://apigesdocrest.movilidadbogota.gov.co/creaRadicado
+
+spring:
+  # Spring Data JPA configuration
+  jpa:
+    show-sql: false
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+  # Database
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@172.30.6.93:1521:FABRICA
+    username: sirc
+    password: SIRC
+
+security:
+  jwt:
+    secret: HYgAf)rr_6-ts9
+
+feign:
+  httpclient:
+    disableSslValidation: true
