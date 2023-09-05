@@ -1,6 +1,6 @@
 rest-client:
   orfeo:
-    url: https://apigesdocrest.movilidadbogota.gov.co/creaRadicado
+    url: https://apigesdocrest.movilidadbogota.gov.co/Dev/creaRadicado
 
 spring:
   # Spring Data JPA configuration

@@ -8,8 +8,10 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class CalificacionesDTO {
-    private Long idConductor;
+
+    private String nivelSatisfaccion;
     private String valoracion;
+    private String felicitacion = "";
     private String buenTrabajo = "";
     private String conduccionSegura = "";
     private String siguioRuta = "";

@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class PqrsDTO {
-    private String hechos;
+
     private String asunto;
-    private Long idConductor;
+    private String hechos;
 }
