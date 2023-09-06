@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CalificacionesRepository extends JpaRepository<CalificacionesEntity, Long> {
 
-    Optional<CalificacionesEntity> findByNumeroIdentificacionUsuario( Long numeroUsuario);
+    Optional<CalificacionesEntity> findByNumeroDocumento( Integer numeroDocumento );
 }

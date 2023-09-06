@@ -11,7 +11,6 @@ import co.gov.movilidadbogota.sircrs.dto.pqr.PqrResponseDto;
 import co.gov.movilidadbogota.sircrs.model.*;
 import co.gov.movilidadbogota.sircrs.repository.*;
 import co.gov.movilidadbogota.sircrs.service.pqr.PqrService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
@@ -39,6 +38,9 @@ public class PqrServiceImpl implements PqrService {
     private TipoDocumentoRepository tipoDocumentoRepository;
 
     @Autowired
+    private ConductorVehiculoRepository conductorVehiculoRepository;
+
+    @Autowired
     private OrfeoClient orfeoClient;
 
     @Autowired
@@ -47,24 +49,22 @@ public class PqrServiceImpl implements PqrService {
     @Autowired
     private PqrMapper pqrMapper;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Override
     public PqrResponseDto createPqr( PqrRequestDTO request ) {
         try {
             ConductorEntity conductor = conductorRepository.findById(request.getIdConductor()).get();
+            ConductorVehiculoEntity conductorVehiculo = conductorVehiculoRepository.findByTarjetaControl(request.getTarjetaControl());
             PqrResponseDto response = new PqrResponseDto();
             if (request.getCalificacion() != null) {
-                Optional<CalificacionesEntity> calificacion = calificacionesRepository.findByNumeroIdentificacionUsuario
-                        (Long.valueOf(request.getNumeroIdentificacionUsuario()));
+                Optional<CalificacionesEntity> calificacion = calificacionesRepository.findByNumeroDocumento
+                        (request.getNumeroIdentificacionUsuario());
                 if (calificacion.isPresent()) {
-                    if (validateHoraCalificacion(calificacion.get())) {
+                    if (!validateHoraCalificacion(calificacion.get())) {
                         response.setMensaje("Ya realizó una calificación en las ultimas 12 horas a éste conductor.");
                         return response;
                     }
                 }
-                saveCalificacion(request, conductor);
+                saveCalificacion(request, conductor, conductorVehiculo);
                 response.setMensaje("Calificación Guardad con Éxito");
             }
 
@@ -73,9 +73,8 @@ public class PqrServiceImpl implements PqrService {
                 PersonaEntity persona = personaRepository.findByNumeroDocumentoAndTipoDocumento(
                         Long.valueOf(request.getNumeroIdentificacionUsuario()), tipoDocumento);
 
-                savePqr(request, conductor);
+                savePqr(request, conductor, conductorVehiculo);
                 OrfeoRequest request1 = createRequestOrfeo(request, persona);
-                //System.out.println(objectMapper.writer().writeValueAsString(request1));
                 OrfeoResponse orfeoResponse = orfeoClient.createRadicado(request1);
                 assert orfeoResponse != null;
                 response.setMensaje("Radicado con éxito");
@@ -98,16 +97,25 @@ public class PqrServiceImpl implements PqrService {
     }
 
     @Transactional
-    public void saveCalificacion( PqrRequestDTO request, ConductorEntity conductor ) {
+    public void saveCalificacion( PqrRequestDTO request, ConductorEntity conductor, ConductorVehiculoEntity conductorVehiculo ) {
         CalificacionesEntity calificacionesEntity = calificacionesMapper.toEntityFromRequest(request.getCalificacion());
         calificacionesEntity.setConductor(conductor);
+        calificacionesEntity.setIdVehiculo(conductorVehiculo.getId());
+        calificacionesEntity.setIdTipoIdentificacion(request.getTipoIdentificacionUsuario());
+        calificacionesEntity.setNumeroDocumento(request.getNumeroIdentificacionUsuario());
+        calificacionesEntity.setIdCache(request.getIdCache());
+        calificacionesEntity.setFechaModificacion(new Date());
         calificacionesRepository.save(calificacionesEntity);
     }
 
     @Transactional
-    public void savePqr( PqrRequestDTO request, ConductorEntity conductor ) {
+    public void savePqr( PqrRequestDTO request, ConductorEntity conductor, ConductorVehiculoEntity conductorVehiculo ) {
         PqrsEntity pqrsEntity = pqrMapper.toEntityFromRequest(request.getPqr());
         pqrsEntity.setConductor(conductor);
+        pqrsEntity.setIdVehiculo(conductorVehiculo.getId());
+        pqrsEntity.setIdTipoIdentificacion(request.getTipoIdentificacionUsuario());
+        pqrsEntity.setNumeroDocumento(request.getNumeroIdentificacionUsuario());
+        pqrsEntity.setIdCache(request.getIdCache());
         pqrRepository.save(pqrsEntity);
     }
 

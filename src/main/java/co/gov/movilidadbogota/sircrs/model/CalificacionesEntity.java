@@ -24,17 +24,14 @@ public class CalificacionesEntity {
     @JoinColumn(name = "ID_CONDUCTOR")
     private ConductorEntity conductor;
 
-    @Column(name = "PLACA_VEHICULO")
-    private String placaVehiculo;
+    @Column(name = "ID_VEHICULO")
+    private Long idVehiculo;
 
-    @Column(name = "TARJETA_CONTROL")
-    private String tarjetaControl;
+    @Column(name = "ID_TIPO_DOCUMENTO")
+    private Integer idTipoIdentificacion;
 
-    @Column(name = "TIPO_IDENTIFICACION_USUARIO")
-    private String tipoIdentificacion;
-
-    @Column(name = "NUMERO_IDENTIFICACION_USUARIO")
-    private Long numeroIdentificacionUsuario;
+    @Column(name = "NUMERO_DOCUMENTO")
+    private Integer numeroDocumento;
 
     @Column(name = "ID_CACHE")
     private String idCache;
