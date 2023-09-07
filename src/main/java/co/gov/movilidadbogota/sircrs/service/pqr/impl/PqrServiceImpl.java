@@ -56,8 +56,8 @@ public class PqrServiceImpl implements PqrService {
             ConductorVehiculoEntity conductorVehiculo = conductorVehiculoRepository.findByTarjetaControl(request.getTarjetaControl());
             PqrResponseDto response = new PqrResponseDto();
             if (request.getCalificacion() != null) {
-                Optional<CalificacionesEntity> calificacion = calificacionesRepository.findByNumeroDocumento
-                        (request.getNumeroIdentificacionUsuario());
+                Optional<CalificacionesEntity> calificacion = calificacionesRepository.findByNumeroDocumentoOrderByFechaModificacionDesc
+                        (request.getNumeroIdentificacionUsuario()).stream().findFirst();
                 if (calificacion.isPresent()) {
                     if (!validateHoraCalificacion(calificacion.get())) {
                         response.setMensaje("Ya realizó una calificación en las ultimas 12 horas a éste conductor.");
