@@ -11,5 +11,4 @@ public class PqrResponseDto {
 
     private String radicado;
     private String mensaje;
-    private String urlConsulta;
 }

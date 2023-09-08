@@ -85,9 +85,8 @@ public class PqrServiceImpl implements PqrService {
                 OrfeoRequest request1 = createRequestOrfeo(request, persona);
                 OrfeoResponse orfeoResponse = orfeoClient.createRadicado(request1);
                 assert orfeoResponse != null;
-                response.setMensaje("Radicado con éxito");
+                response.setMensaje("Radicado con éxito, puedes visualizarlo en: " + parametroSimur.getDescripcionParametro());
                 response.setRadicado(orfeoResponse.getDescripcion());
-                response.setUrlConsulta(parametroSimur.getDescripcionParametro());
             }
             return response;
         } catch (Exception e) {
@@ -102,7 +101,6 @@ public class PqrServiceImpl implements PqrService {
         Date dateCalification = calendar.getTime();
         Date currentDate = new Date();
         return dateCalification.before(currentDate);
-
     }
 
     @Transactional
