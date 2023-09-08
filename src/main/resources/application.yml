@@ -23,3 +23,5 @@ security:
 feign:
   httpclient:
     disableSslValidation: true
+
+parametro-simur: URL.PQR

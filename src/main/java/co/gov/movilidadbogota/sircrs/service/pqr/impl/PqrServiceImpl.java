@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +42,9 @@ public class PqrServiceImpl implements PqrService {
     private ConductorVehiculoRepository conductorVehiculoRepository;
 
     @Autowired
+    private ParametroSimurRepository parametroSimurRepository;
+
+    @Autowired
     private OrfeoClient orfeoClient;
 
     @Autowired
@@ -48,6 +52,9 @@ public class PqrServiceImpl implements PqrService {
 
     @Autowired
     private PqrMapper pqrMapper;
+
+    @Value("${parametro-simur}")
+    private String parametroUrlPqr;
 
     @Override
     public PqrResponseDto createPqr( PqrRequestDTO request ) {
@@ -72,6 +79,7 @@ public class PqrServiceImpl implements PqrService {
                 TipoDocumentoEntity tipoDocumento = tipoDocumentoRepository.findById(Long.valueOf(request.getTipoIdentificacionUsuario())).get();
                 PersonaEntity persona = personaRepository.findByNumeroDocumentoAndTipoDocumento(
                         Long.valueOf(request.getNumeroIdentificacionUsuario()), tipoDocumento);
+                ParametroSimurEntity parametroSimur = parametroSimurRepository.findByCodigoParametro(parametroUrlPqr);
 
                 savePqr(request, conductor, conductorVehiculo);
                 OrfeoRequest request1 = createRequestOrfeo(request, persona);
@@ -79,6 +87,7 @@ public class PqrServiceImpl implements PqrService {
                 assert orfeoResponse != null;
                 response.setMensaje("Radicado con éxito");
                 response.setRadicado(orfeoResponse.getDescripcion());
+                response.setUrlConsulta(parametroSimur.getDescripcionParametro());
             }
             return response;
         } catch (Exception e) {
