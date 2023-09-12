@@ -11,10 +11,11 @@ spring:
       ddl-auto: update
   # Database
   datasource:
+    jndi-name: java:/sircDS
     driver-class-name: oracle.jdbc.OracleDriver
-    url: jdbc:oracle:thin:@172.30.6.93:1521:FABRICA
-    username: sirc
-    password: SIRC
+    #url: jdbc:oracle:thin:@172.30.6.93:1521:FABRICA
+    #username: sirc
+    #password: SIRC
 
 security:
   jwt:
