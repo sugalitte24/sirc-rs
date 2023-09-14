@@ -36,8 +36,8 @@ public class CalificacionesEntity {
     @Column(name = "ID_CACHE")
     private String idCache;
 
-    @Column(name = "VALORACION")
-    private String valoracion;
+    @Column(name = "NIVEL_SATISFACION")
+    private Integer nivelSatisfacion;
 
     @Column(name = "FELICITACION")
     private String felicitacion;

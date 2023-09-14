@@ -9,7 +9,6 @@ import lombok.*;
 @Builder
 public class CalificacionesDTO {
     private String nivelSatisfaccion;
-    private String valoracion;
     private String felicitacion = "";
     private String buenTrabajo = "";
     private String conduccionSegura = "";
