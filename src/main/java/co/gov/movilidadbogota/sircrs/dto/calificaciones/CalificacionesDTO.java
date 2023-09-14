@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class CalificacionesDTO {
-    private String nivelSatisfacion;
+    private String nivelSatisfaccion;
     private String felicitacion = "";
     private String buenTrabajo = "";
     private String conduccionSegura = "";
