@@ -10,7 +10,7 @@ import lombok.*;
 public class CalificacionesDTO {
     private String nivelSatisfaccion;
     private String felicitacion = "";
-    private String buenTrabajo = "";
+    private String buenTrato = "";
     private String conduccionSegura = "";
     private String siguioRuta = "";
     private String vehiculoBueno = "";

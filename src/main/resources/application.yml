@@ -16,6 +16,10 @@ spring:
     #url: jdbc:oracle:thin:@172.30.6.93:1521:FABRICA
     #username: sirc
     #password: SIRC
+    #BaseSoft
+    #url: jdbc:oracle:thin:@204.110.52.87:1521:orcl
+    #username: SIRC
+    #password: pLGSks4Y
 
 security:
   jwt:

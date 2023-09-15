@@ -42,8 +42,8 @@ public class CalificacionesEntity {
     @Column(name = "FELICITACION")
     private String felicitacion;
 
-    @Column(name = "BUEN_TRABAJO")
-    private String buenTrabajo;
+    @Column(name = "BUEN_TRATO")
+    private String buenTrato;
 
     @Column(name = "CONDUCCION_SEGURA")
     private String conduccionSegura;
