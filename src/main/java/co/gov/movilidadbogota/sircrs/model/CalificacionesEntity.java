@@ -2,6 +2,7 @@ package co.gov.movilidadbogota.sircrs.model;
 
 import java.util.Date;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,14 +25,12 @@ public class CalificacionesEntity {
     @JoinColumn(name = "ID_CONDUCTOR")
     private ConductorEntity conductor;
 
-    @Column(name = "ID_VEHICULO")
-    private Long idVehiculo;
+    @ManyToOne
+    @JoinColumn(name = "ID_PETICIONARIO")
+    private PeticionarioEntity peticionario;
 
-    @Column(name = "ID_TIPO_DOCUMENTO")
-    private Integer idTipoIdentificacion;
-
-    @Column(name = "NUMERO_DOCUMENTO")
-    private Integer numeroDocumento;
+    @Column(name = "PLACA_VEHICULO")
+    private String placaVehiculo;
 
     @Column(name = "ID_CACHE")
     private String idCache;
@@ -42,48 +41,52 @@ public class CalificacionesEntity {
     @Column(name = "FELICITACION")
     private String felicitacion;
 
-    @Column(name = "BUEN_TRATO")
-    private String buenTrato;
+    @Column(name = "BUEN_TRABAJO")
+    private Integer buenTrabajo;
 
     @Column(name = "CONDUCCION_SEGURA")
-    private String conduccionSegura;
+    private Integer conduccionSegura;
 
     @Column(name = "SIGUIO_RUTA")
-    private String siguioRuta;
+    private Integer siguioRuta;
 
     @Column(name = "VEHICULO_BUENO")
-    private String vehiculoBueno;
+    private Integer vehiculoBueno;
 
     @Column(name = "MAL_SERVICIO")
-    private String malServicio;
+    private Integer malServicio;
 
     @Column(name = "COBRO_INADECUADO")
-    private String cobroInadecuado;
+    private Integer cobroInadecuado;
 
     @Column(name = "NO_SIGUE_RUTA")
-    private String noSigueRuta;
+    private Integer noSigueRuta;
 
     @Column(name = "MAL_VEHICULO")
-    private String malVehiculo;
+    private Integer malVehiculo;
 
     @Column(name = "TRATO_CONDUCTOR")
-    private String tratoConductor;
+    private Integer tratoConductor;
 
     @Column(name = "ACOSO_DISCRIMINACION")
-    private String acosoDiscriminacion;
+    private Integer acosoDiscriminacion;
 
     @Column(name = "PRESTACION_INCOMPLETA")
-    private String prestacionIncompleta;
+    private Integer prestacionIncompleta;
 
     @Column(name = "MANEJO_AGRESIVO")
-    private String manejoAgresivo;
+    private Integer manejoAgresivo;
 
     @Column(name = "INFORMACION_IRREGULAR")
-    private String informacionIrregular;
+    private Integer informacionIrregular;
 
     @Column(name = "OTRO")
     private String otro;
 
     @Column(name = "FECHA_MODIFICACION")
     private Date fechaModificacion;
+
+    @Column(name = "AUTOMATICO")
+    @NotNull
+    private String automatico;
 }

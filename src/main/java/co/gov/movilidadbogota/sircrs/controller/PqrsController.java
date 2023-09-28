@@ -3,6 +3,7 @@ package co.gov.movilidadbogota.sircrs.controller;
 import co.gov.movilidadbogota.sircrs.dto.pqr.PqrRequestDTO;
 import co.gov.movilidadbogota.sircrs.dto.pqr.PqrResponseDto;
 import co.gov.movilidadbogota.sircrs.service.pqr.PqrService;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,7 @@ public class PqrsController {
     private PqrService pqrService;
 
     @PostMapping("create-pqr")
-    public PqrResponseDto createPqr( @RequestBody PqrRequestDTO request ) {
+    public PqrResponseDto createPqr(@Valid @RequestBody PqrRequestDTO request ) {
         return pqrService.createPqr(request);
     }
 }

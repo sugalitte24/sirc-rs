@@ -29,8 +29,8 @@ public class PqrsEntity {
     @Column(name = "ASUNTO")
     private String asunto;
 
-    @Column(name = "ID_VEHICULO")
-    private Long idVehiculo;
+    @Column(name = "PLACA_VEHICULO")
+    private String placaVehiculo;
 
     @Column(name = "ID_TIPO_DOCUMENTO")
     private Integer idTipoIdentificacion;
@@ -45,4 +45,7 @@ public class PqrsEntity {
     @JoinColumn(name = "ID_CONDUCTOR")
     private ConductorEntity conductor;
 
+    @ManyToOne
+    @JoinColumn(name = "ID_PETICIONARIO")
+    private PeticionarioEntity peticionario;
 }
