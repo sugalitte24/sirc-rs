@@ -32,12 +32,6 @@ public class PqrsEntity {
     @Column(name = "PLACA_VEHICULO")
     private String placaVehiculo;
 
-    @Column(name = "ID_TIPO_DOCUMENTO")
-    private Integer idTipoIdentificacion;
-
-    @Column(name = "NUMERO_DOCUMENTO")
-    private Integer numeroDocumento;
-
     @Column(name = "ID_CACHE")
     private String idCache;
 
