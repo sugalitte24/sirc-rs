@@ -3,13 +3,15 @@ package co.gov.movilidadbogota.sircrs.client;
 
 import co.gov.movilidadbogota.sircrs.dto.orfeo.OrfeoRequest;
 import co.gov.movilidadbogota.sircrs.dto.orfeo.OrfeoResponse;
+import feign.Headers;
+import feign.RequestLine;
+import java.net.URI;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "orfeo", url = "${rest-client.orfeo.url}")
+@FeignClient(name = "orfeo")
 public interface OrfeoClient {
 
-    @PostMapping()
-    OrfeoResponse createRadicado( @RequestBody OrfeoRequest request );
+    @RequestLine("POST")
+    @Headers("Content-Type: application/json")
+    OrfeoResponse createRadicado( URI orfeoUrl, OrfeoRequest request );
 }

@@ -17,9 +17,9 @@ spring:
     #username: sirc
     #password: SIRC
     #BaseSoft
-    #url: jdbc:oracle:thin:@204.110.52.87:1521:orcl
+    #url: jdbc:oracle:thin:@101.44.27.227:1521:orcl
     #username: SIRC
-    #password: pLGSks4Y
+    #password: 4J%vh]i2OQ
 
 security:
   jwt:
@@ -29,4 +29,5 @@ feign:
   httpclient:
     disableSslValidation: true
 
-parametro-simur: URL.PQR
+pqr.url.consulta.radicado: URL.PQR
+pqr.url.orfeo: URL.PQR.ORFEO

@@ -11,6 +11,7 @@ import co.gov.movilidadbogota.sircrs.dto.pqr.PqrResponseDto;
 import co.gov.movilidadbogota.sircrs.model.*;
 import co.gov.movilidadbogota.sircrs.repository.*;
 import co.gov.movilidadbogota.sircrs.service.pqr.PqrService;
+import java.net.URI;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
@@ -35,9 +36,6 @@ public class PqrServiceImpl implements PqrService {
     private ConductorRepository conductorRepository;
 
     @Autowired
-    private ConductorVehiculoRepository conductorVehiculoRepository;
-
-    @Autowired
     private ParametroSimurRepository parametroSimurRepository;
 
     @Autowired
@@ -52,8 +50,11 @@ public class PqrServiceImpl implements PqrService {
     @Autowired
     private PqrMapper pqrMapper;
 
-    @Value("${parametro-simur}")
-    private String parametroUrlPqr;
+    @Value("${pqr.url.consulta.radicado}")
+    private String URLConsultaRadicadoOrfeo;
+
+    @Value("${pqr.url.orfeo}")
+    private String URLOrfeo;
 
     @Override
     public PqrResponseDto createPqr( PqrRequestDTO request ) {
@@ -66,40 +67,43 @@ public class PqrServiceImpl implements PqrService {
                 return response;
             }
 
-            PeticionarioEntity peticionarioEntity = new PeticionarioEntity();
+            PeticionarioEntity peticionarioEntity = peticionarioRepository.findByNumeroIdentificacionUsuario(request.getNumeroIdentificacionUsuario());
             ConductorEntity conductor = conductorRepository.findById(request.getIdConductor())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Conductor No Existe."));
-            if (request.getNumeroIdentificacionUsuario() != null) {
-                peticionarioEntity = peticionarioRepository.findByNumeroIdentificacionUsuario(request.getNumeroIdentificacionUsuario());
-                if (peticionarioEntity == null) {
-                    peticionarioEntity = savePeticionarioEvaluador(request);
-                }
 
-                if (request.getCalificacion() != null) {
-                    Optional<CalificacionesEntity> calificacion = calificacionesRepository.findByPeticionarioOrderByFechaModificacionDesc
-                            (peticionarioEntity).stream().findFirst();
-                    if (calificacion.isPresent()) {
-                        if (!validateHoraCalificacion(calificacion.get())) {
-                            response.setMensaje("Ya realizó una calificación en las ultimas 12 horas a éste conductor.");
-                            return response;
+            if (request.getCalificacion() != null) {
+                if (request.getNumeroIdentificacionUsuario() != null) {
+                    if (peticionarioEntity == null) {
+                        peticionarioEntity = savePeticionarioEvaluador(request);
+                    }
+
+                    if (request.getCalificacion() != null) {
+                        Optional<CalificacionesEntity> calificacion = calificacionesRepository.findByPeticionarioOrderByFechaModificacionDesc
+                                (peticionarioEntity).stream().findFirst();
+                        if (calificacion.isPresent()) {
+                            if (!validateHoraCalificacion(calificacion.get())) {
+                                response.setMensaje("Ya realizó una calificación en las ultimas 12 horas a éste conductor.");
+                                return response;
+                            }
                         }
                     }
+                    saveCalificacion(request, conductor, peticionarioEntity);
+                    response.setMensaje("Calificación Guardada con Éxito");
+                    return response;
                 }
                 saveCalificacion(request, conductor, peticionarioEntity);
                 response.setMensaje("Calificación Guardada con Éxito");
-                return response;
             }
-            saveCalificacion(request, conductor, peticionarioEntity);
-            response.setMensaje("Calificación Guardada con Éxito");
 
             if (request.getPqr() != null) {
-                ParametroSimurEntity parametroSimur = parametroSimurRepository.findByCodigoParametro(parametroUrlPqr);
+                ParametroSimurEntity orfeoConsultaRadicado = parametroSimurRepository.findByCodigoParametro(URLConsultaRadicadoOrfeo);
+                ParametroSimurEntity orfeoUrl = parametroSimurRepository.findByCodigoParametro(URLOrfeo);
 
                 savePqr(request, conductor, peticionarioEntity);
                 OrfeoRequest request1 = createRequestOrfeo(request);
-                OrfeoResponse orfeoResponse = orfeoClient.createRadicado(request1);
+                OrfeoResponse orfeoResponse = orfeoClient.createRadicado( new URI(orfeoUrl.getValorParametro()), request1);
                 assert orfeoResponse != null;
-                response.setMensaje("Radicado con éxito, puedes visualizarlo en: " + parametroSimur.getDescripcionParametro());
+                response.setMensaje("Radicado con éxito, puedes visualizarlo en: " + orfeoConsultaRadicado.getValorParametro());
                 response.setRadicado(orfeoResponse.getDescripcion());
             }
             return response;
@@ -124,13 +128,13 @@ public class PqrServiceImpl implements PqrService {
         calificacionesEntity.setPlacaVehiculo(request.getPlacaVehiculo());
         calificacionesEntity.setIdCache(request.getIdCache());
         calificacionesEntity.setFechaModificacion(new Date());
-        calificacionesEntity.setPeticionario(peticionario.getNumeroIdentificacionUsuario() == null ? null :peticionario);
+        calificacionesEntity.setPeticionario(peticionario.getNumeroIdentificacionUsuario() == null ? null : peticionario);
         calificacionesEntity.setAutomatico(request.getAutomatico());
         calificacionesRepository.save(calificacionesEntity);
     }
 
     @Transactional
-    public void saveCalificacionEmpty( PqrRequestDTO request) {
+    public void saveCalificacionEmpty( PqrRequestDTO request ) {
         CalificacionesEntity calificacionesEntity = new CalificacionesEntity();
         calificacionesEntity.setPlacaVehiculo(request.getPlacaVehiculo());
         calificacionesEntity.setAutomatico(request.getAutomatico());
@@ -163,7 +167,7 @@ public class PqrServiceImpl implements PqrService {
         peticionarioEntity.setTelefonoCelular(request.getTelefonoCelular());
         return peticionarioRepository.save(peticionarioEntity);
     }
-    
+
     private OrfeoRequest createRequestOrfeo( PqrRequestDTO request ) {
         OrfeoRequest orfeoRequest = new OrfeoRequest();
         orfeoRequest.setUsuarioApp(VariablesOrfeo.usuarioApp.getValue());
