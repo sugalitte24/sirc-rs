@@ -11,6 +11,7 @@ import co.gov.movilidadbogota.sircrs.dto.pqr.PqrResponseDto;
 import co.gov.movilidadbogota.sircrs.model.*;
 import co.gov.movilidadbogota.sircrs.repository.*;
 import co.gov.movilidadbogota.sircrs.service.pqr.PqrService;
+import feign.FeignException;
 import java.net.URI;
 import java.util.Calendar;
 import java.util.Date;
@@ -101,7 +102,12 @@ public class PqrServiceImpl implements PqrService {
 
                 savePqr(request, conductor, peticionarioEntity);
                 OrfeoRequest request1 = createRequestOrfeo(request);
-                OrfeoResponse orfeoResponse = orfeoClient.createRadicado( new URI(orfeoUrl.getValorParametro()), request1);
+                OrfeoResponse orfeoResponse = new OrfeoResponse();
+                try {
+                    orfeoResponse = orfeoClient.createRadicado(new URI(orfeoUrl.getValorParametro()), request1);
+                } catch (FeignException.FeignClientException feignException) {
+                    response.setError(feignException.getMessage());
+                }
                 assert orfeoResponse != null;
                 response.setMensaje("Radicado con éxito, puedes visualizarlo en: " + orfeoConsultaRadicado.getValorParametro());
                 response.setRadicado(orfeoResponse.getDescripcion());
