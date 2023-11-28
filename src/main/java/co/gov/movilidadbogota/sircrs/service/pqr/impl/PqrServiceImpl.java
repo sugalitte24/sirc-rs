@@ -90,10 +90,10 @@ public class PqrServiceImpl implements PqrService {
                     }
                     saveCalificacion(request, conductor, peticionarioEntity);
                     response.setMensaje("Calificación Guardada con Éxito");
-                    return response;
+                } else {
+                    saveCalificacion(request, conductor, peticionarioEntity);
+                    response.setMensaje("Calificación Guardada con Éxito");
                 }
-                saveCalificacion(request, conductor, peticionarioEntity);
-                response.setMensaje("Calificación Guardada con Éxito");
             }
 
             if (request.getPqr() != null) {
@@ -109,9 +109,15 @@ public class PqrServiceImpl implements PqrService {
                     response.setError(feignException.getMessage());
                 }
                 assert orfeoResponse != null;
-                response.setMensaje("Radicado con éxito, puedes visualizarlo en: " + orfeoConsultaRadicado.getValorParametro());
+
+                if (request.getPqr() != null && request.getCalificacion() != null) {
+                    response.setMensaje("Calificación Guardada y Radicado PQR con éxito, puedes visualizarlo en: " + orfeoConsultaRadicado.getValorParametro());
+                } else {
+                    response.setMensaje("Radicado con éxito, puedes visualizarlo en: " + orfeoConsultaRadicado.getValorParametro());
+                }
                 response.setRadicado(orfeoResponse.getDescripcion());
             }
+
             return response;
         } catch (Exception e) {
             return PqrResponseDto.builder().mensaje(e.getMessage()).build();
