@@ -11,6 +11,7 @@ import co.gov.movilidadbogota.sircrs.dto.pqr.PqrResponseDto;
 import co.gov.movilidadbogota.sircrs.model.*;
 import co.gov.movilidadbogota.sircrs.repository.*;
 import co.gov.movilidadbogota.sircrs.service.pqr.PqrService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import java.net.URI;
 import java.util.Calendar;
@@ -57,10 +58,12 @@ public class PqrServiceImpl implements PqrService {
     @Value("${pqr.url.orfeo}")
     private String URLOrfeo;
 
+
     @Override
     public PqrResponseDto createPqr( PqrRequestDTO request ) {
         try {
             PqrResponseDto response = new PqrResponseDto();
+            ConductorEntity conductor = null;
 
             if (request.getAutomatico().equals("Si")) {
                 saveCalificacionEmpty(request);
@@ -69,8 +72,11 @@ public class PqrServiceImpl implements PqrService {
             }
 
             PeticionarioEntity peticionarioEntity = peticionarioRepository.findByNumeroIdentificacionUsuario(request.getNumeroIdentificacionUsuario());
-            ConductorEntity conductor = conductorRepository.findById(request.getIdConductor())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Conductor No Existe."));
+
+            if(request.getIdConductor() != null){
+                 conductor = conductorRepository.findById(request.getIdConductor())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Conductor No Existe."));
+            }
 
             if (request.getCalificacion() != null) {
                 if (request.getNumeroIdentificacionUsuario() != null) {
@@ -156,7 +162,9 @@ public class PqrServiceImpl implements PqrService {
     @Transactional
     public void savePqr( PqrRequestDTO request, ConductorEntity conductor, PeticionarioEntity peticionario ) {
         PqrsEntity pqrsEntity = pqrMapper.toEntityFromRequest(request.getPqr());
-        pqrsEntity.setConductor(conductor);
+        if(conductor != null){
+            pqrsEntity.setConductor(conductor);
+        }
         pqrsEntity.setPlacaVehiculo(request.getPlacaVehiculo());
         pqrsEntity.setIdCache(request.getIdCache());
         pqrsEntity.setPeticionario(peticionario);
