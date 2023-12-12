@@ -58,6 +58,12 @@ public class PqrServiceImpl implements PqrService {
     @Value("${pqr.url.orfeo}")
     private String URLOrfeo;
 
+    @Value("${pqr.url.orfeo,usuario.radica}")
+    private String usuarioRadicaOrfeo;
+
+    @Value("${pqr.url.orfeo.departamento}")
+    private String departamentOrfeo;
+
 
     @Override
     public PqrResponseDto createPqr( PqrRequestDTO request ) {
@@ -189,12 +195,15 @@ public class PqrServiceImpl implements PqrService {
     }
 
     private OrfeoRequest createRequestOrfeo( PqrRequestDTO request ) {
+        ParametroSimurEntity usuarioRadica = parametroSimurRepository.findByCodigoParametro(usuarioRadicaOrfeo);
+        ParametroSimurEntity departamentoOrfeo = parametroSimurRepository.findByCodigoParametro(departamentOrfeo);
+
         OrfeoRequest orfeoRequest = new OrfeoRequest();
         orfeoRequest.setUsuarioApp(VariablesOrfeo.usuarioApp.getValue());
         orfeoRequest.setContrasenaApp(VariablesOrfeo.contrasenaApp.getValue());
         orfeoRequest.setTipo(2);
         orfeoRequest.setAsunto(request.getPqr().getAsunto());
-        orfeoRequest.setUsuaRadica(VariablesOrfeo.usuaRadica.getValue());
+        orfeoRequest.setUsuaRadica(usuarioRadica.getValorParametro());
         orfeoRequest.setTipoTercero(1);
         orfeoRequest.setNombreTercero(request.getNombres());
         orfeoRequest.setPrimerApellidoTercero(request.getPrimerApellido());
@@ -218,7 +227,7 @@ public class PqrServiceImpl implements PqrService {
         orfeoRequest.setCodigoBarrioLocalNotif(0);
         orfeoRequest.setCodigoBarrioLocal(0);
         orfeoRequest.setCuentaInterna(VariablesOrfeo.cuentaInterna.getValue());
-        orfeoRequest.setDepActual(421);
+        orfeoRequest.setDepActual(Integer.valueOf(departamentoOrfeo.getValorParametro()));
         orfeoRequest.setVigencia(0);
         orfeoRequest.setUsuarioinforma("");
         orfeoRequest.setNumeroComparendo(0);
@@ -238,6 +247,7 @@ public class PqrServiceImpl implements PqrService {
         orfeoRequest.setFechaOficioRadicadociu("");
         orfeoRequest.setDignatariociu("");
         orfeoRequest.setCodigoBarrioLocalNotifciu("");
+        orfeoRequest.setDescripcionPQRS(request.getPqr().getHechos());
         return orfeoRequest;
     }
 }

@@ -58,4 +58,5 @@ public class OrfeoRequest {
     private String fechaOficioRadicadociu;
     private String dignatariociu;
     private String codigoBarrioLocalNotifciu;
+    private String descripcionPQRS;
 }

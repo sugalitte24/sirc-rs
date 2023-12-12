@@ -31,3 +31,5 @@ feign:
 
 pqr.url.consulta.radicado: URL.PQR
 pqr.url.orfeo: URL.PQR.ORFEO
+pqr.url.orfeo,usuario.radica: URL.PQR.ORFEO.USUARIO.RADICA
+pqr.url.orfeo.departamento: URL.PQR.ORFEO.DEPARTAMENTO
