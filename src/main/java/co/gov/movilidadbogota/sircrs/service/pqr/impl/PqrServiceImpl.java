@@ -58,7 +58,7 @@ public class PqrServiceImpl implements PqrService {
     @Value("${pqr.url.orfeo}")
     private String URLOrfeo;
 
-    @Value("${pqr.url.orfeo,usuario.radica}")
+    @Value("${pqr.url.orfeo.usuario.radica}")
     private String usuarioRadicaOrfeo;
 
     @Value("${pqr.url.orfeo.departamento}")
