@@ -25,4 +25,5 @@ public class CalificacionesDTO {
     private Integer informacionIrregular = 0;
     private String otro;
     private String automatico;
+    private String visibilidadTarjetaControl;
 }

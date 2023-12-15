@@ -11,7 +11,6 @@ import co.gov.movilidadbogota.sircrs.dto.pqr.PqrResponseDto;
 import co.gov.movilidadbogota.sircrs.model.*;
 import co.gov.movilidadbogota.sircrs.repository.*;
 import co.gov.movilidadbogota.sircrs.service.pqr.PqrService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import java.net.URI;
 import java.util.Calendar;
@@ -79,8 +78,8 @@ public class PqrServiceImpl implements PqrService {
 
             PeticionarioEntity peticionarioEntity = peticionarioRepository.findByNumeroIdentificacionUsuario(request.getNumeroIdentificacionUsuario());
 
-            if(request.getIdConductor() != null){
-                 conductor = conductorRepository.findById(request.getIdConductor())
+            if (request.getIdConductor() != null) {
+                conductor = conductorRepository.findById(request.getIdConductor())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Conductor No Existe."));
             }
 
@@ -91,10 +90,10 @@ public class PqrServiceImpl implements PqrService {
                     }
 
                     if (request.getCalificacion() != null) {
-                        Optional<CalificacionesEntity> calificacion = calificacionesRepository.findByPeticionarioOrderByFechaModificacionDesc
-                                (peticionarioEntity).stream().findFirst();
+                        Optional<CalificacionesEntity> calificacion = calificacionesRepository.findByPeticionarioAndPlacaVehiculoOrderByFechaModificacionDesc
+                                (peticionarioEntity, request.getPlacaVehiculo()).stream().findFirst();
                         if (calificacion.isPresent()) {
-                            if (!validateHoraCalificacion(calificacion.get())) {
+                            if (!validateHoraCalificacion(calificacion.get().getFechaModificacion())) {
                                 response.setMensaje("Ya realizó una calificación en las ultimas 12 horas a éste conductor.");
                                 return response;
                             }
@@ -108,7 +107,18 @@ public class PqrServiceImpl implements PqrService {
                 }
             }
 
-            if (request.getPqr() != null) {
+            if (request.getPqr() != null && request.getNumeroIdentificacionUsuario() != null) {
+
+                Optional<PqrsEntity> pqr = pqrRepository.findByPeticionarioAndPlacaVehiculoOrderByFechaRadicadoDesc
+                        (peticionarioEntity, request.getPlacaVehiculo()).stream().findFirst();
+
+                if (pqr.isPresent()) {
+                    if (!validateHoraCalificacion(pqr.get().getFechaRadicado())) {
+                        response.setMensaje("Ya realizó un PQR en las ultimas 12 horas a éste conductor.");
+                        return response;
+                    }
+                }
+
                 ParametroSimurEntity orfeoConsultaRadicado = parametroSimurRepository.findByCodigoParametro(URLConsultaRadicadoOrfeo);
                 ParametroSimurEntity orfeoUrl = parametroSimurRepository.findByCodigoParametro(URLOrfeo);
 
@@ -128,6 +138,8 @@ public class PqrServiceImpl implements PqrService {
                     response.setMensaje("Radicado con éxito, puedes visualizarlo en: " + orfeoConsultaRadicado.getValorParametro());
                 }
                 response.setRadicado(orfeoResponse.getDescripcion());
+            } else {
+                response.setError("No radicado, falta número de identificación");
             }
 
             return response;
@@ -136,9 +148,9 @@ public class PqrServiceImpl implements PqrService {
         }
     }
 
-    public Boolean validateHoraCalificacion( CalificacionesEntity entity ) {
+    public Boolean validateHoraCalificacion( Date fecha ) {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(entity.getFechaModificacion());
+        calendar.setTime(fecha);
         calendar.add(Calendar.HOUR, 12);
         Date dateCalification = calendar.getTime();
         Date currentDate = new Date();
@@ -168,7 +180,7 @@ public class PqrServiceImpl implements PqrService {
     @Transactional
     public void savePqr( PqrRequestDTO request, ConductorEntity conductor, PeticionarioEntity peticionario ) {
         PqrsEntity pqrsEntity = pqrMapper.toEntityFromRequest(request.getPqr());
-        if(conductor != null){
+        if (conductor != null) {
             pqrsEntity.setConductor(conductor);
         }
         pqrsEntity.setPlacaVehiculo(request.getPlacaVehiculo());

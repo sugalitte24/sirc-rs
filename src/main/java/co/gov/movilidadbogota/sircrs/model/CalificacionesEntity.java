@@ -89,4 +89,7 @@ public class CalificacionesEntity {
     @Column(name = "AUTOMATICO")
     @NotNull
     private String automatico;
+
+    @Column(name = "VISIBILIDAD_TARJETA_CONTROL")
+    private String visibilidadTarjetaControl;
 }
