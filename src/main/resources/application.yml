@@ -33,3 +33,14 @@ pqr.url.consulta.radicado: URL.PQR
 pqr.url.orfeo: URL.PQR.ORFEO
 pqr.url.orfeo.usuario.radica: URL.PQR.ORFEO.USUARIO.RADICA
 pqr.url.orfeo.departamento: URL.PQR.ORFEO.DEPARTAMENTO
+####################
+#Mensajes Negocio.##
+####################
+mensaje.calificacion.exito: "Calificación Guardada con Éxito"
+mensaje.conductor.no.existe: "Conductor No Existe."
+mensaje.calificacion.existe: "Ya realizó una calificación en las ultimas 12 horas a éste conductor."
+mensaje.pqr.existe: "Ya realizó una PQR en en las ultimas 12 horas a éste conductor."
+mensaje.pqr.calificacion.guardada: "Calificación Guardada y Radicado PQR con éxito, puedes visualizarlo en: "
+mensaje.pqr.radicado.exito: "Radicado con éxito, puedes visualizarlo en: "
+mensaje.pqr.radicado.fallido: "No radicado, falta número de identificación"
+parametro.automatico: Si

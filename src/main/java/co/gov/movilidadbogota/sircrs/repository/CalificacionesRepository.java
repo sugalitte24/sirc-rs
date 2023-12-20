@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface CalificacionesRepository extends JpaRepository<CalificacionesEntity, Long> {
 
     List<CalificacionesEntity> findByPeticionarioAndPlacaVehiculoOrderByFechaModificacionDesc( PeticionarioEntity peticionario, String placa );
+    List<CalificacionesEntity> findByIdCacheAndPlacaVehiculoOrderByFechaModificacionDesc( String idCache, String placa );
 }
