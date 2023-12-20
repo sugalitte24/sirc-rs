@@ -194,9 +194,11 @@ public class PqrServiceImpl implements PqrService {
     }
 
     @Transactional
-    public PqrResponseDto saveCalificacion( PqrRequestDTO request, ConductorEntity conductor, PeticionarioEntity peticionario, PqrResponseDto response ) {
+    public PqrResponseDto saveCalificacion( PqrRequestDTO request, ConductorEntity conductor, PeticionarioEntity peticionario, PqrResponseDto response ) throws JsonProcessingException {
         CalificacionesEntity calificacionesEntity = calificacionesMapper.toEntityFromRequest(request.getCalificacion());
-        calificacionesEntity.setConductor(conductor);
+        if(conductor != null){
+            calificacionesEntity.setConductor(conductor);
+        }
         calificacionesEntity.setPlacaVehiculo(request.getPlacaVehiculo());
         calificacionesEntity.setIdCache(request.getIdCache());
         calificacionesEntity.setFechaModificacion(new Date());
