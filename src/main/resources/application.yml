@@ -33,6 +33,8 @@ pqr.url.consulta.radicado: URL.PQR
 pqr.url.orfeo: URL.PQR.ORFEO
 pqr.url.orfeo.usuario.radica: URL.PQR.ORFEO.USUARIO.RADICA
 pqr.url.orfeo.departamento: URL.PQR.ORFEO.DEPARTAMENTO
+pqr.url.orfeo.usuario.app: URL.PQR.ORFEO.USUARIO.APP
+pqr.url.orfeo.contrasena.app: URL.PQR.ORFEO.CONTRASENA.APP
 ####################
 #Mensajes Negocio.##
 ####################

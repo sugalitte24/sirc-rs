@@ -63,6 +63,12 @@ public class PqrServiceImpl implements PqrService {
     @Value("${pqr.url.orfeo.departamento}")
     private String departamentOrfeo;
 
+    @Value("${pqr.url.orfeo.usuario.app}")
+    private String usuarioAppOrfeo;
+
+    @Value("${pqr.url.orfeo.contrasena.app}")
+    private String constrasenaAppOrfeo;
+
     @Value("${mensaje.calificacion.exito}")
     private String calificacionExito;
 
@@ -102,8 +108,7 @@ public class PqrServiceImpl implements PqrService {
 
             PeticionarioEntity peticionarioEntity = peticionarioRepository.findByNumeroIdentificacionUsuario(request.getNumeroIdentificacionUsuario());
             if (request.getIdConductor() != null) {
-                conductor = conductorRepository.findById(request.getIdConductor())
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, conductorNoExiste));
+                conductor = conductorRepository.findById(request.getIdConductor()).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, conductorNoExiste));
             }
 
             if (request.getCalificacion() != null) {
@@ -113,8 +118,7 @@ public class PqrServiceImpl implements PqrService {
                     }
 
                     if (request.getCalificacion() != null) {
-                        Optional<CalificacionesEntity> calificacion = calificacionesRepository.findByPeticionarioAndPlacaVehiculoOrderByFechaModificacionDesc
-                                (peticionarioEntity, request.getPlacaVehiculo()).stream().findFirst();
+                        Optional<CalificacionesEntity> calificacion = calificacionesRepository.findByPeticionarioAndPlacaVehiculoOrderByFechaModificacionDesc(peticionarioEntity, request.getPlacaVehiculo()).stream().findFirst();
                         if (calificacion.isPresent()) {
                             if (!validateHoraCalificacion(calificacion.get().getFechaModificacion())) {
                                 response.setMensaje(calificacionExistente);
@@ -124,8 +128,7 @@ public class PqrServiceImpl implements PqrService {
                     }
                     saveCalificacion(request, conductor, peticionarioEntity, response);
                 } else if (request.getIdCache() != null) {
-                    Optional<CalificacionesEntity> calificacionCache = calificacionesRepository.findByIdCacheAndPlacaVehiculoOrderByFechaModificacionDesc
-                            (request.getIdCache(), request.getPlacaVehiculo()).stream().findFirst();
+                    Optional<CalificacionesEntity> calificacionCache = calificacionesRepository.findByIdCacheAndPlacaVehiculoOrderByFechaModificacionDesc(request.getIdCache(), request.getPlacaVehiculo()).stream().findFirst();
 
                     if (calificacionCache.isPresent()) {
                         if (!validateHoraCalificacion(calificacionCache.get().getFechaModificacion())) {
@@ -143,8 +146,7 @@ public class PqrServiceImpl implements PqrService {
             if (request.getPqr() != null) {
                 if (request.getNumeroIdentificacionUsuario() != null) {
 
-                    Optional<PqrsEntity> pqr = pqrRepository.findByPeticionarioAndPlacaVehiculoOrderByFechaRadicadoDesc
-                            (peticionarioEntity, request.getPlacaVehiculo()).stream().findFirst();
+                    Optional<PqrsEntity> pqr = pqrRepository.findByPeticionarioAndPlacaVehiculoOrderByFechaRadicadoDesc(peticionarioEntity, request.getPlacaVehiculo()).stream().findFirst();
                     if (pqr.isPresent()) {
                         if (!validateHoraCalificacion(pqr.get().getFechaRadicado())) {
                             response.setMensaje(pqrExistente);
@@ -177,8 +179,7 @@ public class PqrServiceImpl implements PqrService {
             }
 
             return response;
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             return PqrResponseDto.builder().mensaje(e.getMessage()).build();
         }
 
@@ -196,7 +197,7 @@ public class PqrServiceImpl implements PqrService {
     @Transactional
     public PqrResponseDto saveCalificacion( PqrRequestDTO request, ConductorEntity conductor, PeticionarioEntity peticionario, PqrResponseDto response ) {
         CalificacionesEntity calificacionesEntity = calificacionesMapper.toEntityFromRequest(request.getCalificacion());
-        if(conductor != null){
+        if (conductor != null) {
             calificacionesEntity.setConductor(conductor);
         }
         calificacionesEntity.setPlacaVehiculo(request.getPlacaVehiculo());
@@ -251,10 +252,12 @@ public class PqrServiceImpl implements PqrService {
     private OrfeoRequest createRequestOrfeo( PqrRequestDTO request ) {
         ParametroSimurEntity usuarioRadica = parametroSimurRepository.findByCodigoParametro(usuarioRadicaOrfeo);
         ParametroSimurEntity departamentoOrfeo = parametroSimurRepository.findByCodigoParametro(departamentOrfeo);
+        ParametroSimurEntity usuarioApp = parametroSimurRepository.findByCodigoParametro(usuarioAppOrfeo);
+        ParametroSimurEntity contrasenaApp = parametroSimurRepository.findByCodigoParametro(constrasenaAppOrfeo);
 
         OrfeoRequest orfeoRequest = new OrfeoRequest();
-        orfeoRequest.setUsuarioApp(VariablesOrfeo.usuarioApp.getValue());
-        orfeoRequest.setContrasenaApp(VariablesOrfeo.contrasenaApp.getValue());
+        orfeoRequest.setUsuarioApp(usuarioApp.getValorParametro());
+        orfeoRequest.setContrasenaApp(contrasenaApp.getValorParametro());
         orfeoRequest.setTipo(2);
         orfeoRequest.setAsunto(request.getPqr().getAsunto());
         orfeoRequest.setUsuaRadica(usuarioRadica.getValorParametro());
